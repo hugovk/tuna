@@ -34,7 +34,7 @@ def main(argv=None):
 
 def _get_parser():
     """Parse input options."""
-    parser = argparse.ArgumentParser(description=("Visualize Python profile."))
+    parser = argparse.ArgumentParser(description="Visualize Python profile.")
 
     parser.add_argument("infile", type=str, help="input runtime or import profile file")
     parser.add_argument(
@@ -66,6 +66,6 @@ def _get_parser():
         "--version",
         "-v",
         action="version",
-        version="%(prog)s " + (f"(version {__version__})"),
+        version="%(prog)s " + f"(version {__version__})",
     )
     return parser
