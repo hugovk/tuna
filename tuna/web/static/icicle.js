@@ -1,3 +1,11 @@
+// Color mapping for inlining styles in exported SVG
+const COLOR_MAP = {
+  color0: "#01579b",
+  color1: "#0288d1",
+  color2: "#0288d1",
+  color3: "#bdbdbd",
+};
+
 class Icicle extends HTMLElement {
   connectedCallback() {
     // this.shadow = this.createShadowRoot();
@@ -6,6 +14,138 @@ class Icicle extends HTMLElement {
     this.svg = d3.select(this).append("svg");
     this.svg.style("width", "100%");
     this.render();
+    this.setupExportButtons();
+  }
+
+  setupExportButtons() {
+    const svgButton = document.getElementById("exportSvgButton");
+    const pngButton = document.getElementById("exportPngButton");
+
+    if (svgButton) {
+      svgButton.addEventListener("click", () => this.exportSvg());
+    }
+    if (pngButton) {
+      pngButton.addEventListener("click", () => this.exportPng());
+    }
+  }
+
+  get exportBaseName() {
+    const title = document.title;
+    const prefix = "tuna - ";
+    const filename = title.startsWith(prefix)
+      ? title.slice(prefix.length)
+      : "tuna";
+    const basename = filename.split(/[/\\]/).pop();
+    return basename.replace(/\.[^.]+$/, "");
+  }
+
+  getSvgWithInlinedStyles() {
+    const svgNode = this.svg.node();
+    const clone = svgNode.cloneNode(true);
+
+    const width = svgNode.getBoundingClientRect().width;
+    const height = parseFloat(svgNode.getAttribute("height"));
+    const padding = 20;
+
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("width", width + padding * 2);
+    clone.setAttribute("height", height + padding * 2);
+    clone.style.fontFamily =
+      "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, Adwaita Sans, Cantarell, Ubuntu, roboto, noto, helvetica, arial, sans-serif";
+
+    // Add white background with border
+    const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("width", width + padding * 2);
+    bg.setAttribute("height", height + padding * 2);
+    bg.setAttribute("fill", "#ffffff");
+    bg.setAttribute("stroke", "#dee2e6");
+    bg.setAttribute("stroke-width", "1");
+    clone.insertBefore(bg, clone.firstChild);
+
+    // Wrap existing content in a group offset by padding
+    const wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    wrapper.setAttribute("transform", `translate(${padding},${padding})`);
+    while (clone.childNodes.length > 1) {
+      wrapper.appendChild(clone.childNodes[1]);
+    }
+    clone.appendChild(wrapper);
+
+    // Inline styles for all groups with color classes
+    clone.querySelectorAll("g").forEach((g) => {
+      for (const [className, fillColor] of Object.entries(COLOR_MAP)) {
+        if (g.classList.contains(className)) {
+          const rect = g.querySelector("rect");
+          if (rect) {
+            rect.setAttribute("fill", fillColor);
+            rect.setAttribute("stroke", "#fff");
+          }
+          // Also style clip-path rects
+          const clipRect = g.querySelector("clipPath rect");
+          if (clipRect) {
+            clipRect.setAttribute("fill", fillColor);
+            clipRect.setAttribute("stroke", "#fff");
+          }
+        }
+      }
+    });
+
+    return clone;
+  }
+
+  exportSvg() {
+    const clone = this.getSvgWithInlinedStyles();
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(clone);
+    const blob = new Blob([svgString], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${this.exportBaseName}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  exportPng() {
+    const clone = this.getSvgWithInlinedStyles();
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(clone);
+
+    const width = parseFloat(clone.getAttribute("width"));
+    const height = parseFloat(clone.getAttribute("height"));
+
+    const canvas = document.createElement("canvas");
+    const scale = 2; // Higher resolution
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    const img = new Image();
+    const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+
+      canvas.toBlob((blob) => {
+        const pngUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = pngUrl;
+        a.download = `${this.exportBaseName}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(pngUrl);
+      }, "image/png");
+    };
+
+    img.src = url;
   }
 
   get width() {
