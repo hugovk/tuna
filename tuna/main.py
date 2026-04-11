@@ -8,7 +8,7 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-from .__about__ import __version__
+from .cli import get_version_text
 from ._helpers import TunaError
 from ._import_profile import read_import_profile
 from ._runtime_profile import read_runtime_profile
@@ -30,7 +30,7 @@ def render(data, prof_filename):
 
     return template.substitute(
         data=html.escape(json.dumps(data).replace("</", "<\\/")),
-        version=html.escape(__version__),
+        version=html.escape(get_version_text()),
         filename=html.escape(prof_filename.replace("</", "<\\/")),
     )
 

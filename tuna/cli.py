@@ -1,10 +1,11 @@
 import argparse
 import shutil
 import threading
+from importlib import metadata
 import webbrowser
 from pathlib import Path
+from sys import version_info as vi
 
-from .__about__ import __version__
 from .main import read, render, start_server
 
 
@@ -66,6 +67,15 @@ def _get_parser():
         "--version",
         "-v",
         action="version",
-        version="%(prog)s " + (f"(version {__version__})"),
+        version=get_version_text(),
     )
     return parser
+
+
+def get_version_text():
+    try:
+        _version = metadata.version("tuna")
+    except metadata.PackageNotFoundError:
+        _version = "unknown"
+
+    return f"quadpy {_version} [Python {vi.major}.{vi.minor}.{vi.micro}]"
