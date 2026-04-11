@@ -12,5 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-node@v4
+      - uses: extractions/setup-just@v2
+      - run: just dep
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
