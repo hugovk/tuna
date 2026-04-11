@@ -55,7 +55,7 @@ class Icicle extends HTMLElement {
     const g = all_g
       .data(
         // Only get the blocks above a certain threshold width
-        root.descendants().filter((d) => x(d.x1 - d.x0) > 1.0)
+        root.descendants().filter((d) => x(d.x1 - d.x0) > 1.0),
       )
       .enter()
       .append("g")

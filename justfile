@@ -32,12 +32,10 @@ update:
 	npm outdated
 
 lint:
-	flake8 .
-	black --check .
-	# blacken-docs README.md
-	npm run prettier
+	pre-commit run --all
 
 format:
-	isort .
-	black .
+	ruff check --fix tuna/ tests/
+	black tuna/ tests/
+	# blacken-docs README.md
 	prettier --write README.md .github tuna/web/static/icicle.js tuna/web/static/tuna.css tuna/web/index.html
