@@ -49,23 +49,5 @@ tuna = "tuna.cli:main"
 src = ["src", "tests"]
 line-length = 88
 lint.select = ["ALL"]
-lint.ignore = [
-  "ANN",
-  # "C901",
-  "COM812",
-  "D",
-  # "E741",
-  "ERA",
-  # "FBT",
-  # "INP001",
-  # "N",
-  # "PLC0415",
-  # "PLR",
-  # "PT028",
-  "S101",
-  # "T201",
-  # "TID252",
-  # "FIX002",
-  # "TD",
-]
+lint.ignore = ["ANN", "COM812", "D", "ERA", "PLR", "S101"]
 target-version = "py310"

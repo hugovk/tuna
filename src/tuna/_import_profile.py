@@ -1,7 +1,10 @@
 import logging
+from pathlib import Path
 
 from ._helpers import TunaError
 from .module_groups import built_in, built_in_deprecated
+
+logger = logging.getLogger(__name__)
 
 
 def read_import_profile(filename):
@@ -23,24 +26,24 @@ def read_import_profile(filename):
     # above example, `encodings` is parent to `encodings.aliases` and `codecs` which in
     # turn is parent to `_codecs`.
     entries = []
-    with open(filename, encoding="utf-8") as f:
+    with Path(filename).open(encoding="utf-8") as f:
         # filtered iterator over lines prefixed with "import time: "
         try:
             # skip first line
             next(f)
-        except UnicodeError:
-            raise TunaError()
+        except UnicodeError as err:
+            raise TunaError from err
 
         for line in f:
             if not line.startswith("import time: "):
-                logging.warning(f"Didn't recognize and skipped line `{line.rstrip()}`")
+                logger.warning("Didn't recognize and skipped line `%s`", line.rstrip())
                 continue
 
-            line = line[len("import time: ") :].rstrip()
+            content = line[len("import time: ") :].rstrip()
 
-            if line == "self [us] | cumulative | imported package":
+            if content == "self [us] | cumulative | imported package":
                 continue
-            items = line.split(" | ")
+            items = content.split(" | ")
             assert len(items) == 3
             self_time = int(items[0])
             last = items[2]
@@ -53,11 +56,11 @@ def read_import_profile(filename):
     tree = _sort_into_tree(entries[::-1])
 
     # go through the tree and add "color"
-    _add_color(tree, False)
+    _add_color(tree, ancestor_is_built_in=False)
     return tree[0]
 
 
-def _add_color(tree, ancestor_is_built_in):
+def _add_color(tree, *, ancestor_is_built_in: bool):
     for item in tree:
         module_name = item["text"][0].split(".")[0]
         is_built_in = (

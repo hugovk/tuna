@@ -1,5 +1,6 @@
 import html
 import json
+import logging
 import mimetypes
 import socket
 import string
@@ -11,6 +12,8 @@ from pathlib import Path
 from ._helpers import TunaError, get_version_text
 from ._import_profile import read_import_profile
 from ._runtime_profile import read_runtime_profile
+
+logger = logging.getLogger(__name__)
 
 
 def read(filename):
@@ -24,7 +27,7 @@ def read(filename):
 
 def render(data, prof_filename):
     this_dir = Path(__file__).resolve().parent
-    with open(this_dir / "web" / "index.html", encoding="utf-8") as _file:
+    with (this_dir / "web" / "index.html").open(encoding="utf-8") as _file:
         template = string.Template(_file.read())
 
     return template.substitute(
@@ -59,7 +62,7 @@ def start_server(prof_filename, start_browser, port):
                 self.send_header("Content-type", mimetype)
                 self.end_headers()
 
-                with open(filepath, "rb") as fh:
+                with filepath.open("rb") as fh:
                     content = fh.read()
                 self.wfile.write(content)
 
@@ -74,5 +77,5 @@ def start_server(prof_filename, start_browser, port):
         address = f"http://localhost:{port}"
         threading.Thread(target=lambda: webbrowser.open_new_tab(address)).start()
 
-    print(f"Starting httpd on port {port}")
+    logger.info("Starting httpd on port %s", port)
     httpd.serve_forever()
