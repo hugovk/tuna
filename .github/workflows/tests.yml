@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-      - run: uvx pre-commit run --all-files
+      - uses: j178/prek-action@v2
 
   build:
     runs-on: ubuntu-latest
