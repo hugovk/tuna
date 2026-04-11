@@ -6,7 +6,7 @@ import socket
 import string
 import threading
 import webbrowser
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from ._helpers import TunaError, get_version_text
@@ -71,7 +71,7 @@ def start_server(prof_filename, start_browser, port):
         while is_port_in_use(port):
             port += 1
 
-    httpd = HTTPServer(("", port), StaticServer)
+    httpd = ThreadingHTTPServer(("", port), StaticServer)
 
     if start_browser:
         address = f"http://localhost:{port}"
