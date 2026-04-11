@@ -23,8 +23,8 @@ clean:
 
 dep:
 	npm install
-	cp node_modules/bootstrap/dist/css/bootstrap.min.css tuna/web/static/
-	cp node_modules/d3/dist/d3.min.js tuna/web/static/
+	cp node_modules/bootstrap/dist/css/bootstrap.min.css src/tuna/web/static/
+	cp node_modules/d3/dist/d3.min.js src/tuna/web/static/
 
 update:
 	npm update
@@ -35,7 +35,7 @@ lint:
 	pre-commit run --all
 
 format:
-	ruff check --fix tuna/ tests/
-	black tuna/ tests/
+	ruff check --fix src/ tests/
+	black src/ tests/
 	# blacken-docs README.md
-	prettier --write README.md .github tuna/web/static/icicle.js tuna/web/static/tuna.css tuna/web/index.html
+	prettier --write README.md .github src/tuna/web/static/icicle.js src/tuna/web/static/tuna.css tuna/web/index.html
