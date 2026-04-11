@@ -84,7 +84,7 @@ def _sort_into_tree(lst):
         name, level, time = entry
         # find the last entry with level-1
         last[level - 1]["children"] += [
-            {"text": [name], "value": time * 1.0e-6, "children": []}
+            {"text": [name], "value": time * 1.0e-6, "children": []},
         ]
         last[level] = last[level - 1]["children"][-1]
 

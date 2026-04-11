@@ -2,7 +2,7 @@ import subprocess
 import time
 from pathlib import Path
 
-import tuna  # noqa
+import tuna
 
 
 def test_tuna():
@@ -37,9 +37,9 @@ import time:       1 |    12 | a
                         "value": 2e-06,
                         "color": 0,
                         "children": [{"text": ["c"], "value": 3e-06, "color": 0}],
-                    }
+                    },
                 ],
-            }
+            },
         ],
     }
 
@@ -82,17 +82,17 @@ import time:       1 |    12 | a
                                         "text": ["e"],
                                         "value": 4.9999999999999996e-06,
                                         "color": 0,
-                                    }
+                                    },
                                 ],
                                 "color": 0,
-                            }
+                            },
                         ],
                         "color": 0,
                     },
                     {"text": ["d"], "value": 4e-06, "color": 0},
                 ],
                 "color": 0,
-            }
+            },
         ],
     }
 

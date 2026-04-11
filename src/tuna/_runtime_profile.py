@@ -74,7 +74,7 @@ def read_runtime_profile(prof_filename):
                     "text": [name + "::self", f"{selftime:.3} s"],
                     "color": 0,
                     "value": selftime,
-                }
+                },
             )
             return {"text": [name], "color": 0, "children": c}
 
@@ -91,7 +91,7 @@ def read_runtime_profile(prof_filename):
                     ],
                     "color": 3,
                     "value": cumtime,
-                }
+                },
             ]
             return {"text": [name], "color": 0, "children": c}
 

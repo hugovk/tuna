@@ -4,7 +4,6 @@ import time
 def a(t0, t1):
     c(t0)
     d(t1)
-    return
 
 
 def b():
@@ -13,12 +12,10 @@ def b():
 
 def c(t):
     time.sleep(t)
-    return
 
 
 def d(t):
     time.sleep(t)
-    return
 
 
 if __name__ == "__main__":
