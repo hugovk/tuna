@@ -7,7 +7,7 @@ name = "tuna"
 version = "0.5.11"
 description = "Visualize Python performance profiles"
 readme = "README.md"
-license = "GPL-3.0-or-later"
+license = { text = "GPL-3.0-or-later" }
 authors = [{ name = "Nico Schlömer", email = "nico.schloemer@gmail.com" }]
 keywords = ["performance", "profile", "visualization"]
 classifiers = [
