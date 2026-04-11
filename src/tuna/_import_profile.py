@@ -73,7 +73,7 @@ def _add_color(tree, *, ancestor_is_built_in: bool):
             color = 2
         item["color"] = color
         if "children" in item:
-            _add_color(item["children"], is_built_in)
+            _add_color(item["children"], ancestor_is_built_in=is_built_in)
 
 
 def _sort_into_tree(lst):
