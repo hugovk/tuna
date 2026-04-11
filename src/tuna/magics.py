@@ -44,16 +44,14 @@ def _display_tuna(
     # displayed
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning)
-        return HTML(
-            f"""
+        return HTML(f"""
             <iframe
               srcdoc="{html.escape(page)}"
               style="border: 0"
               width="100%"
               height={iframe_height}>
             </iframe>
-            """
-        )
+            """)
 
 
 @register_line_cell_magic

@@ -4,7 +4,7 @@ import threading
 import webbrowser
 from pathlib import Path
 
-from .__about__ import __version__
+from ._helpers import get_version_text
 from .main import read, render, start_server
 
 
@@ -66,6 +66,6 @@ def _get_parser():
         "--version",
         "-v",
         action="version",
-        version="%(prog)s " + (f"(version {__version__})"),
+        version=get_version_text(),
     )
     return parser
