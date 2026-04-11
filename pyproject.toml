@@ -26,7 +26,10 @@ classifiers = [
   "Topic :: Software Development :: User Interfaces",
   "Topic :: Utilities",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
+
+[dependency-groups]
+dev = ["pytest", "pytest-codeblocks", "pytest-cov"]
 
 [project.urls]
 Code = "https://github.com/nschloe/tuna"
