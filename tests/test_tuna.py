@@ -2,7 +2,7 @@ import subprocess
 import time
 from pathlib import Path
 
-import tuna  # noqa
+import tuna
 
 
 def test_tuna():
@@ -10,7 +10,7 @@ def test_tuna():
     filename = this_dir / "foo.prof"
     cmd = ["tuna", filename, "--no-browser"]
 
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # noqa: S603
     # give server time to start up
     time.sleep(3)
     p.terminate()
@@ -37,14 +37,14 @@ import time:       1 |    12 | a
                         "value": 2e-06,
                         "color": 0,
                         "children": [{"text": ["c"], "value": 3e-06, "color": 0}],
-                    }
+                    },
                 ],
-            }
+            },
         ],
     }
 
     filepath = tmp_path / "test.log"
-    with open(filepath, "w", encoding="utf-8") as f:
+    with filepath.open("w") as f:
         f.write(content)
 
     out = tuna.read_import_profile(filepath)
@@ -82,22 +82,22 @@ import time:       1 |    12 | a
                                         "text": ["e"],
                                         "value": 4.9999999999999996e-06,
                                         "color": 0,
-                                    }
+                                    },
                                 ],
                                 "color": 0,
-                            }
+                            },
                         ],
                         "color": 0,
                     },
                     {"text": ["d"], "value": 4e-06, "color": 0},
                 ],
                 "color": 0,
-            }
+            },
         ],
     }
 
     filepath = tmp_path / "test.log"
-    with open(filepath, "w", encoding="utf-8") as f:
+    with filepath.open("w") as f:
         f.write(content)
 
     out = tuna.read_import_profile(filepath)

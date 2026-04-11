@@ -14,7 +14,9 @@ from .cli import main as tuna_main
 
 
 def _display_tuna(
-    tuna_dir: str, row_height: int = 60, iframe_height: int = 500
+    tuna_dir: str,
+    row_height: int = 60,
+    iframe_height: int = 500,
 ) -> HTML:
     tuna_dir = Path(tuna_dir)
     static_dir = tuna_dir / "static"

@@ -17,7 +17,7 @@ def main(argv=None):
         outdir = Path(args.outdir)
         if not outdir.is_dir():
             outdir.mkdir(parents=True)
-        with open(outdir / "index.html", "wt", encoding="utf-8") as out:
+        with (outdir / "index.html").open("w", encoding="utf-8") as out:
             out.write(render(data, args.infile))
         this_dir = Path(__file__).resolve().parent
         static_dir = outdir / "static"
@@ -26,7 +26,7 @@ def main(argv=None):
         shutil.copytree(this_dir / "web" / "static", static_dir)
         if args.browser:
             threading.Thread(
-                target=lambda: webbrowser.open_new_tab(outdir / "index.html")
+                target=lambda: webbrowser.open_new_tab(outdir / "index.html"),
             ).start()
     else:
         start_server(args.infile, args.browser, args.port)

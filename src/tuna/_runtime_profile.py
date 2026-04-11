@@ -1,7 +1,7 @@
 import pstats
 
 
-def read_runtime_profile(prof_filename):
+def read_runtime_profile(prof_filename):  # noqa: C901
     stats = pstats.Stats(prof_filename)
 
     # # stats.strip_dirs()
@@ -19,6 +19,7 @@ def read_runtime_profile(prof_filename):
     # program. For this reason, find all nodes without parents _and_ simply hardcode
     # `<built-in method builtins.exec>`.
     roots = set()
+    min_time_s = 1.0e-5
     for key, value in stats.stats.items():
         # The object {('~', 0, "<method 'disable' of '_lsprof.Profiler' objects>")}
         # is part of the profile and a root node. Its runtime is usually miniscule and
@@ -26,7 +27,7 @@ def read_runtime_profile(prof_filename):
         # cumtime larger than a threshold.
         # If there is only one remaining root (which is most often the case), one can
         # cut of the artificial "root" node. See below.
-        if not value[4] and value[3] > 1.0e-5:
+        if not value[4] and value[3] > min_time_s:
             roots.add(key)
 
     default_roots = [
@@ -39,7 +40,7 @@ def read_runtime_profile(prof_filename):
     roots = list(roots)
 
     # Collect children
-    children = {key: [] for key in stats.stats.keys()}
+    children = {key: [] for key in stats.stats}
     for key, value in stats.stats.items():
         _, _, _, _, parents = value
         for parent in parents:
@@ -68,13 +69,13 @@ def read_runtime_profile(prof_filename):
 
         if len(parent_times) <= 1:
             # Handle children
-            c = [populate(child, key, all_ancestors + [key]) for child in children[key]]
+            c = [populate(child, key, [*all_ancestors, key]) for child in children[key]]
             c.append(
                 {
                     "text": [name + "::self", f"{selftime:.3} s"],
                     "color": 0,
                     "value": selftime,
-                }
+                },
             )
             return {"text": [name], "color": 0, "children": c}
 
@@ -91,7 +92,7 @@ def read_runtime_profile(prof_filename):
                     ],
                     "color": 3,
                     "value": cumtime,
-                }
+                },
             ]
             return {"text": [name], "color": 0, "children": c}
 

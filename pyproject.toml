@@ -16,8 +16,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -26,7 +24,7 @@ classifiers = [
   "Topic :: Software Development :: User Interfaces",
   "Topic :: Utilities",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [dependency-groups]
 dev = ["pytest", "pytest-codeblocks", "pytest-cov"]
@@ -45,3 +43,11 @@ tuna = "tuna.cli:main"
   "web/static/*.css",
   "web/static/favicon256.png",
 ]
+
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 88
+lint.select = ["ALL"]
+lint.ignore = ["ANN", "COM812", "D", "ERA", "PLR", "S101"]
+target-version = "py310"
