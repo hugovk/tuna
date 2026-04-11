@@ -104,14 +104,6 @@ pip install tuna
 
 to install.
 
-### Testing
-
-To run the tuna unit tests, check out this repository and type
-
-```
-pytest
-```
-
 ### IPython magics
 
 tuna includes a `tuna` line / cell magic which can be used as a drop-in replacement for
