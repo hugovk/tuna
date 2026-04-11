@@ -26,7 +26,7 @@ def main(argv=None):
         shutil.copytree(this_dir / "web" / "static", static_dir)
         if args.browser:
             threading.Thread(
-                target=lambda: webbrowser.open_new_tab(outdir / "index.html"),
+                target=lambda: webbrowser.open_new_tab(str(outdir / "index.html")),
             ).start()
     else:
         start_server(args.infile, args.browser, args.port)
@@ -34,7 +34,7 @@ def main(argv=None):
 
 def _get_parser():
     """Parse input options."""
-    parser = argparse.ArgumentParser(description=("Visualize Python profile."))
+    parser = argparse.ArgumentParser(description="Visualize Python profile.")
 
     parser.add_argument("infile", type=str, help="input runtime or import profile file")
     parser.add_argument(
