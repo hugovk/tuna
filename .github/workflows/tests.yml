@@ -24,13 +24,12 @@ jobs:
       matrix:
         python-version: ["3.7", "3.14"]
     steps:
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v6
-      - name: Test with tox
+
+      - name: Test
         run: |
-          pip install tox
-          tox
-      - uses: codecov/codecov-action@v6
-        if: ${{ matrix.python-version == '3.11' }}
+          uv run pytest
