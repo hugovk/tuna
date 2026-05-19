@@ -98,15 +98,17 @@ def read_runtime_profile(prof_filename):  # noqa: C901
 
         return {"text": [name, f"{selftime:.3f}"], "color": 0, "value": selftime}
 
+    if len(roots) == 0:
+        msg = "No root node found in profile (all nodes below time threshold?)"
+        raise ValueError(msg)
+
     if len(roots) == 1:
-        data = populate(roots[0], None, [])
-    else:
-        # If there is more than one root, add an artificial "main root" item that is
-        # parent to all roots.
-        assert len(roots) > 1
-        data = {
-            "text": ["root"],
-            "color": 0,
-            "children": [populate(root, None, []) for root in roots],
-        }
-    return data
+        return populate(roots[0], None, [])
+
+    # If there is more than one root, add an artificial "main root" item that
+    # is parent to all roots.
+    return {
+        "text": ["root"],
+        "color": 0,
+        "children": [populate(root, None, []) for root in roots],
+    }
