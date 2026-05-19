@@ -79,9 +79,9 @@ class Icicle extends HTMLElement {
     // Wrap existing content in a group offset by padding
     const wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
     wrapper.setAttribute("transform", `translate(${padding},${padding})`);
-    while (clone.childNodes.length > 1) {
-      wrapper.appendChild(clone.childNodes[1]);
-    }
+    Array.from(clone.childNodes)
+      .slice(1)
+      .forEach((child) => wrapper.appendChild(child));
     clone.appendChild(wrapper);
 
     // Inline styles for all groups with color classes
