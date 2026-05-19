@@ -16,6 +16,11 @@ class Icicle extends HTMLElement {
   #tspan1;
   #tspan2;
   #strokeWidth = 1;
+  #resizeController;
+
+  disconnectedCallback() {
+    this.#resizeController?.abort();
+  }
 
   connectedCallback() {
     this.data = tunaData;
@@ -261,7 +266,10 @@ class Icicle extends HTMLElement {
       .attr("x", (d) => this.#x((d.x0 + d.x1) / 2))
       .attr("dy", "1.5em");
 
-    window.addEventListener("resize", () => this.#reposition());
+    this.#resizeController = new AbortController();
+    window.addEventListener("resize", () => this.#reposition(), {
+      signal: this.#resizeController.signal,
+    });
   }
 
   #reposition(trans = null) {
