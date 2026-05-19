@@ -37,12 +37,16 @@ class Icicle extends HTMLElement {
   #setupExportButtons() {
     const svgButton = document.getElementById("exportSvgButton");
     const pngButton = document.getElementById("exportPngButton");
+    const copyButton = document.getElementById("copyPngButton");
 
     if (svgButton) {
       svgButton.addEventListener("click", () => this.exportSvg());
     }
     if (pngButton) {
       pngButton.addEventListener("click", () => this.exportPng());
+    }
+    if (copyButton) {
+      copyButton.addEventListener("click", () => this.copyPng(copyButton));
     }
   }
 
@@ -130,7 +134,7 @@ class Icicle extends HTMLElement {
     );
   }
 
-  exportPng() {
+  #getPngBlob() {
     const clone = this.#getSvgWithInlinedStyles();
     const svgString = new XMLSerializer().serializeToString(clone);
     const width = parseFloat(clone.getAttribute("width"));
@@ -143,24 +147,62 @@ class Icicle extends HTMLElement {
     const ctx = canvas.getContext("2d");
     ctx.scale(scale, scale);
 
-    const img = new Image();
     const url = URL.createObjectURL(
       new Blob([svgString], { type: "image/svg+xml" }),
     );
 
-    img.onload = () => {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Failed to create PNG blob"));
+          }
+        }, "image/png");
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Failed to load SVG image"));
+      };
+      img.src = url;
+    });
+  }
 
-      canvas.toBlob(
-        (blob) => this.#triggerDownload(blob, `${this.#exportBaseName}.png`),
-        "image/png",
-      );
+  exportPng() {
+    this.#getPngBlob().then((blob) =>
+      this.#triggerDownload(blob, `${this.#exportBaseName}.png`),
+    );
+  }
+
+  copyPng(button) {
+    const originalText = button.textContent;
+    const restore = () => {
+      setTimeout(() => {
+        button.textContent = originalText;
+      }, 1500);
     };
-
-    img.src = url;
+    // ClipboardItem accepts a Promise so Safari permits async blob generation
+    // inside the user-gesture handler.
+    const item = new ClipboardItem({
+      "image/png": this.#getPngBlob(),
+    });
+    navigator.clipboard
+      .write([item])
+      .then(() => {
+        button.textContent = "Copied!";
+        restore();
+      })
+      .catch((err) => {
+        console.error("Failed to copy PNG to clipboard:", err);
+        button.textContent = "Copy failed";
+        restore();
+      });
   }
 
   get #width() {
