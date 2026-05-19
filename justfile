@@ -24,10 +24,10 @@ update:
 	npm outdated
 
 lint:
-	pre-commit run --all
+	prek run --all-files
 
 format:
+	ruff format src/ tests/
 	ruff check --fix src/ tests/
-	black src/ tests/
 	# blacken-docs README.md
 	prettier --write README.md .github src/tuna/web/static/icicle.js src/tuna/web/static/tuna.css tuna/web/index.html
