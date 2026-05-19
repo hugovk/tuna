@@ -72,7 +72,7 @@ def read_runtime_profile(prof_filename):  # noqa: C901
             ]
             c.append(
                 {
-                    "text": [name + "::self", f"{selftime:.3} s"],
+                    "text": [name + "::self", f"{selftime:.3f} s"],
                     "color": 0,
                     "value": selftime,
                 },
