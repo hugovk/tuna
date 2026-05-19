@@ -46,7 +46,7 @@ class Icicle extends HTMLElement {
     }
   }
 
-  get exportBaseName() {
+  get #exportBaseName() {
     const title = document.title;
     const prefix = "tuna - ";
     const filename = title.startsWith(prefix)
@@ -82,7 +82,7 @@ class Icicle extends HTMLElement {
     // Wrap existing content in a group offset by padding
     const wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
     wrapper.setAttribute("transform", `translate(${padding},${padding})`);
-    Array.from(clone.childNodes)
+    [...clone.childNodes]
       .slice(1)
       .forEach((child) => wrapper.appendChild(child));
     clone.appendChild(wrapper);
@@ -126,7 +126,7 @@ class Icicle extends HTMLElement {
     );
     this.#triggerDownload(
       new Blob([svgString], { type: "image/svg+xml" }),
-      `${this.exportBaseName}.svg`,
+      `${this.#exportBaseName}.svg`,
     );
   }
 
@@ -155,7 +155,7 @@ class Icicle extends HTMLElement {
       URL.revokeObjectURL(url);
 
       canvas.toBlob(
-        (blob) => this.#triggerDownload(blob, `${this.exportBaseName}.png`),
+        (blob) => this.#triggerDownload(blob, `${this.#exportBaseName}.png`),
         "image/png",
       );
     };
