@@ -60,7 +60,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
           <div class="pt-3 pb-2 mb-3">
-            <x-icicle data="${data}" row-height="100"></x-icicle>
+            <x-icicle row-height="100"></x-icicle>
           </div>
         </main>
       </div>
@@ -68,10 +68,13 @@
 
     <footer class="bg-light text-center text-lg-left">
       <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-        tuna v${version}
+        ${version}
       </div>
     </footer>
 
+    <script>
+      var tunaData = ${data};
+    </script>
     <script src="static/d3.min.js"></script>
     <script src="static/icicle.js"></script>
   </body>
