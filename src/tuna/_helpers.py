@@ -12,4 +12,4 @@ def get_version_text():
     except metadata.PackageNotFoundError:
         _version = "unknown"
 
-    return f"quadpy {_version} [Python {vi.major}.{vi.minor}.{vi.micro}]"
+    return f"tuna {_version} [Python {vi.major}.{vi.minor}.{vi.micro}]"
