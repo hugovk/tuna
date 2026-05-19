@@ -30,4 +30,4 @@ format:
 	ruff format src/ tests/
 	ruff check --fix src/ tests/
 	# blacken-docs README.md
-	prettier --write README.md .github src/tuna/web/static/icicle.js src/tuna/web/static/tuna.css tuna/web/index.html
+	prettier --write README.md .github src/tuna/web/static/icicle.js src/tuna/web/static/tuna.css src/tuna/web/index.html
