@@ -31,7 +31,7 @@ def render(data, prof_filename):
         template = string.Template(_file.read())
 
     return template.substitute(
-        data=html.escape(json.dumps(data).replace("</", "<\\/")),
+        data=json.dumps(data).replace("</", "<\\/"),
         version=html.escape(get_version_text()),
         filename=html.escape(prof_filename.replace("</", "<\\/")),
     )
