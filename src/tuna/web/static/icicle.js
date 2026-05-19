@@ -189,6 +189,12 @@ class Icicle extends HTMLElement {
     this.#y = d3.scaleLinear().range([0, height]);
 
     const totalRuntime = this.#root.value;
+    const fmtS = d3.format(".3f");
+    const fmtPct = d3.format(".1%");
+    const timeLabel = (d) =>
+      d.data.text.length > 1
+        ? d.data.text[1]
+        : `${fmtS(d.value)} s  (${fmtPct(d.value / totalRuntime)})`;
 
     d3.partition()(this.#root);
 
@@ -206,19 +212,7 @@ class Icicle extends HTMLElement {
       .attr("class", (d) => "color" + d.data.color)
       .on("click", (evt, d) => this.#clicked(d));
 
-    g.append("title").text((d) => {
-      let out = d.data.text[0] + " ";
-      if (d.data.text.length > 1) {
-        out += d.data.text[1];
-      } else {
-        out +=
-          d3.format(".3f")(d.value) +
-          " s  (" +
-          d3.format(".1%")(d.value / totalRuntime) +
-          ")";
-      }
-      return out;
-    });
+    g.append("title").text((d) => `${d.data.text[0]} ${timeLabel(d)}`);
 
     this.#rect = g
       .append("rect")
@@ -254,17 +248,7 @@ class Icicle extends HTMLElement {
 
     this.#tspan2 = this.#text
       .append("tspan")
-      .text((d) => {
-        if (d.data.text.length > 1) {
-          return d.data.text[1];
-        }
-        return (
-          d3.format(".3f")(d.value) +
-          " s  (" +
-          d3.format(".1%")(d.value / totalRuntime) +
-          ")"
-        );
-      })
+      .text(timeLabel)
       .attr("x", (d) => this.#x((d.x0 + d.x1) / 2))
       .attr("dy", "1.5em");
 
