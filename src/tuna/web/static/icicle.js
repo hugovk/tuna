@@ -222,7 +222,7 @@ class Icicle extends HTMLElement {
       .append("rect")
       .attr("x", (d) => x(d.x0))
       .attr("y", (d) => y(d.y0))
-      .attr("width", (d) => x(d.x1 - d.x0))
+      .attr("width", (d) => x(d.x1) - x(d.x0))
       .attr("height", this.rowHeight);
     // .attr("fill", d => color((d.children ? d : d.parent).key))
 
