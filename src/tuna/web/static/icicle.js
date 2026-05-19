@@ -19,7 +19,7 @@ class Icicle extends HTMLElement {
 
   connectedCallback() {
     this.data = tunaData;
-    this.rowHeight = this.getAttribute("row-height");
+    this.rowHeight = +this.getAttribute("row-height");
     this.svg = d3.select(this).append("svg");
     this.svg.style("width", "100%");
     this.render();
