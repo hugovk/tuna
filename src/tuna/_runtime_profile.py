@@ -63,13 +63,13 @@ def read_runtime_profile(prof_filename):  # noqa: C901
         # Convert the tuple key into a string
         name = "{}::{}::{}".format(*key)
 
-        if key in all_ancestors:
-            # avoid loops
-            return {}
-
         if len(parent_times) <= 1:
             # Handle children
-            c = [populate(child, key, [*all_ancestors, key]) for child in children[key]]
+            c = [
+                populate(child, key, [*all_ancestors, key])
+                for child in children[key]
+                if child not in all_ancestors
+            ]
             c.append(
                 {
                     "text": [name + "::self", f"{selftime:.3} s"],
