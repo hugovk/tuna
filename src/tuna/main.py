@@ -44,6 +44,7 @@ def is_port_in_use(port):
 
 def start_server(prof_filename, start_browser, port):
     data = read(prof_filename)
+    rendered = render(data, prof_filename).encode()
 
     class StaticServer(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -52,7 +53,7 @@ def start_server(prof_filename, start_browser, port):
             if self.path == "/":
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
-                self.wfile.write(render(data, prof_filename).encode())
+                self.wfile.write(rendered)
             else:
                 this_dir = Path(__file__).resolve().parent
                 web_dir = this_dir / "web"
