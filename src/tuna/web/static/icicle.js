@@ -15,6 +15,9 @@ class Icicle extends HTMLElement {
   #text;
   #tspan1;
   #tspan2;
+  #data;
+  #svg;
+  #rowHeight;
   #strokeWidth = 1;
   #resizeController;
 
@@ -23,15 +26,15 @@ class Icicle extends HTMLElement {
   }
 
   connectedCallback() {
-    this.data = tunaData;
-    this.rowHeight = +this.getAttribute("row-height");
-    this.svg = d3.select(this).append("svg");
-    this.svg.style("width", "100%");
-    this.render();
-    this.setupExportButtons();
+    this.#data = tunaData;
+    this.#rowHeight = +this.getAttribute("row-height");
+    this.#svg = d3.select(this).append("svg");
+    this.#svg.style("width", "100%");
+    this.#render();
+    this.#setupExportButtons();
   }
 
-  setupExportButtons() {
+  #setupExportButtons() {
     const svgButton = document.getElementById("exportSvgButton");
     const pngButton = document.getElementById("exportPngButton");
 
@@ -53,8 +56,8 @@ class Icicle extends HTMLElement {
     return basename.replace(/\.[^.]+$/, "");
   }
 
-  getSvgWithInlinedStyles() {
-    const svgNode = this.svg.node();
+  #getSvgWithInlinedStyles() {
+    const svgNode = this.#svg.node();
     const clone = svgNode.cloneNode(true);
 
     const width = svgNode.getBoundingClientRect().width;
@@ -105,27 +108,31 @@ class Icicle extends HTMLElement {
     return clone;
   }
 
-  exportSvg() {
-    const clone = this.getSvgWithInlinedStyles();
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(clone);
-    const blob = new Blob([svgString], { type: "image/svg+xml" });
+  #triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${this.exportBaseName}.svg`;
+    const a = Object.assign(document.createElement("a"), {
+      href: url,
+      download: filename,
+    });
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  exportPng() {
-    const clone = this.getSvgWithInlinedStyles();
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(clone);
+  exportSvg() {
+    const svgString = new XMLSerializer().serializeToString(
+      this.#getSvgWithInlinedStyles(),
+    );
+    this.#triggerDownload(
+      new Blob([svgString], { type: "image/svg+xml" }),
+      `${this.exportBaseName}.svg`,
+    );
+  }
 
+  exportPng() {
+    const clone = this.#getSvgWithInlinedStyles();
+    const svgString = new XMLSerializer().serializeToString(clone);
     const width = parseFloat(clone.getAttribute("width"));
     const height = parseFloat(clone.getAttribute("height"));
 
@@ -137,8 +144,9 @@ class Icicle extends HTMLElement {
     ctx.scale(scale, scale);
 
     const img = new Image();
-    const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(svgBlob);
+    const url = URL.createObjectURL(
+      new Blob([svgString], { type: "image/svg+xml" }),
+    );
 
     img.onload = () => {
       ctx.fillStyle = "#ffffff";
@@ -146,28 +154,22 @@ class Icicle extends HTMLElement {
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
 
-      canvas.toBlob((blob) => {
-        const pngUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = pngUrl;
-        a.download = `${this.exportBaseName}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pngUrl);
-      }, "image/png");
+      canvas.toBlob(
+        (blob) => this.#triggerDownload(blob, `${this.exportBaseName}.png`),
+        "image/png",
+      );
     };
 
     img.src = url;
   }
 
-  get width() {
-    return this.svg.node().getBoundingClientRect().width;
+  get #width() {
+    return this.#svg.node().getBoundingClientRect().width;
   }
 
-  render() {
+  #render() {
     this.#root = d3
-      .hierarchy(this.data)
+      .hierarchy(this.#data)
       .sum((d) => d.value)
       .sort((a, b) => b.value - a.value);
 
@@ -180,10 +182,10 @@ class Icicle extends HTMLElement {
       .addEventListener("click", () => this.#clicked(this.#root));
 
     const numLevels = this.#root.height + 1;
-    const height = numLevels * this.rowHeight + numLevels * this.#strokeWidth;
-    this.svg.attr("height", height);
+    const height = numLevels * this.#rowHeight + numLevels * this.#strokeWidth;
+    this.#svg.attr("height", height);
 
-    this.#x = d3.scaleLinear().range([0, this.width]);
+    this.#x = d3.scaleLinear().range([0, this.#width]);
     this.#y = d3.scaleLinear().range([0, height]);
 
     const totalRuntime = this.#root.value;
@@ -192,7 +194,7 @@ class Icicle extends HTMLElement {
 
     // Put text and rectangle into a group;
     // cf. <https://stackoverflow.com/a/6732550/353337>.
-    const g = this.svg
+    const g = this.#svg
       .selectAll("g")
       .data(
         this.#root
@@ -223,7 +225,7 @@ class Icicle extends HTMLElement {
       .attr("x", (d) => this.#x(d.x0))
       .attr("y", (d) => this.#y(d.y0))
       .attr("width", (d) => this.#x(d.x1) - this.#x(d.x0))
-      .attr("height", this.rowHeight);
+      .attr("height", this.#rowHeight);
 
     // First, the clip path, same as the rect.
     // It'd be nice to not have to repeat ourselves here, but the <use> suggestion from
@@ -234,7 +236,7 @@ class Icicle extends HTMLElement {
       .attr("x", (d) => this.#x(d.x0))
       .attr("y", (d) => this.#y(d.y0))
       .attr("width", (d) => this.#x(d.x1) - this.#x(d.x0))
-      .attr("height", this.rowHeight);
+      .attr("height", this.#rowHeight);
 
     // Now the text. Multiline text is realized with <tspan> in SVG.
     this.#text = g
@@ -291,8 +293,8 @@ class Icicle extends HTMLElement {
     const offset = d.y0 ? 20 : 0;
     const numLevels = this.#root.height - d.depth;
     const newHeight =
-      (numLevels + 1) * this.rowHeight + (numLevels + 1) * this.#strokeWidth;
-    this.#x.domain([d.x0, d.x1]).range([0, this.width]);
+      (numLevels + 1) * this.#rowHeight + (numLevels + 1) * this.#strokeWidth;
+    this.#x.domain([d.x0, d.x1]).range([0, this.#width]);
     this.#y.domain([d.y0, 1]).range([offset, newHeight + offset]);
     this.#reposition(d3.transition().duration(300));
   }
