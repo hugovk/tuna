@@ -55,10 +55,19 @@ def start_server(prof_filename, start_browser, port):
                 self.wfile.write(render(data, prof_filename).encode())
             else:
                 this_dir = Path(__file__).resolve().parent
-                filepath = this_dir / "web" / self.path[1:]
+                web_dir = this_dir / "web"
+                filepath = (web_dir / self.path[1:]).resolve()
+
+                if not filepath.is_relative_to(web_dir):
+                    self.send_response(403)
+                    self.end_headers()
+                    return
 
                 mimetype, _ = mimetypes.guess_type(str(filepath))
-                assert mimetype is not None
+                if mimetype is None:
+                    self.send_response(415)
+                    self.end_headers()
+                    return
                 self.send_header("Content-type", mimetype)
                 self.end_headers()
 
