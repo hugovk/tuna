@@ -48,9 +48,8 @@ def start_server(prof_filename, start_browser, port):
 
     class StaticServer(BaseHTTPRequestHandler):
         def do_GET(self):
-            self.send_response(200)
-
             if self.path == "/":
+                self.send_response(200)
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
                 self.wfile.write(rendered)
@@ -69,6 +68,8 @@ def start_server(prof_filename, start_browser, port):
                     self.send_response(415)
                     self.end_headers()
                     return
+
+                self.send_response(200)
                 self.send_header("Content-type", mimetype)
                 self.end_headers()
 
