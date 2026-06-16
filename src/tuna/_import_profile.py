@@ -1,10 +1,13 @@
 import logging
+import sys
 from pathlib import Path
 
 from ._helpers import TunaError
-from .module_groups import built_in, built_in_deprecated
 
 logger = logging.getLogger(__name__)
+
+built_in = sys.stdlib_module_names
+built_in_deprecated = ("formatter", "imp", "optparse")
 
 
 def read_import_profile(filename):
